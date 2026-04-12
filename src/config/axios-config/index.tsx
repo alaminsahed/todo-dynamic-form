@@ -49,20 +49,20 @@ export function extractApiError(error: unknown): ApiError {
   return { message: 'An unexpected error occurred.', isNetworkError: false }
 }
 
-const instance = axios.create({
+const apiClient = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
   timeout: 15_000,
   headers: { 'Content-Type': 'application/json' },
 })
 
-instance.interceptors.request.use(
+apiClient.interceptors.request.use(
   (config) => config,
   (error) => Promise.reject(error),
 )
 
-instance.interceptors.response.use(
+apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => Promise.reject(error),
 )
 
-export default instance
+export default apiClient
