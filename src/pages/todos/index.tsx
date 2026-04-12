@@ -1,8 +1,10 @@
 import { useMemo, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 
+import type { ApiError } from '@/config/axios-config'
 import { fetchTodos } from '@/services/todo'
 import { fetchUsers } from '@/services/user'
+import { TODO_STATUS_FILTER } from '@/constant/todo-status'
 import { useTodosViewState } from '@/hooks/useTodosViewState'
 import Loading from '@/components/loading'
 import TodosFilters from './components/filters'
@@ -15,6 +17,18 @@ const PAGE_SIZE = 10
 
 const todosQueryKey = ['jsonplaceholder', 'todos'] as const
 const usersQueryKey = ['jsonplaceholder', 'users'] as const
+
+function getErrorMessage(error: unknown): string {
+  if (
+    error &&
+    typeof error === 'object' &&
+    'message' in error &&
+    typeof (error as ApiError).message === 'string'
+  ) {
+    return (error as ApiError).message
+  }
+  return 'Could not load todos. Please try again later.'
+}
 
 const Todos = () => {
   const { state, setUserId, setStatus, setSearch, setPage } = useTodosViewState()
@@ -48,9 +62,9 @@ const Todos = () => {
       list = list.filter((todo) => todo.userId === state.userId)
     }
 
-    if (state.status === 'completed') {
+    if (state.status === TODO_STATUS_FILTER.COMPLETED) {
       list = list.filter((todo) => todo.completed)
-    } else if (state.status === 'pending') {
+    } else if (state.status === TODO_STATUS_FILTER.PENDING) {
       list = list.filter((todo) => !todo.completed)
     }
 
@@ -77,6 +91,7 @@ const Todos = () => {
 
   const isLoading = todosListQuery.isLoading || usersListQuery.isLoading
   const error = todosListQuery.error ?? usersListQuery.error
+  const errorMessage = getErrorMessage(error)
 
   return (
     <div className={styles.wrap}>
@@ -101,7 +116,7 @@ const Todos = () => {
 
       {error ? (
         <p className={styles.error} role="alert">
-          Could not load todos. Please try again later.
+          {errorMessage}
         </p>
       ) : (
         !isLoading && (

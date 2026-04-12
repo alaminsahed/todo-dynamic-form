@@ -1,21 +1,22 @@
-import type { StatusFilter } from '@/hooks/useTodosViewState'
-import type { UserItem } from '@/types/todo'
+import { TODO_STATUS_FILTER } from '@/constant/todo-status';
+import type { StatusFilter } from '@/hooks/useTodosViewState';
+import type { UserItem } from '@/types/todo';
 
-import styles from './index.module.css'
+import styles from './index.module.css';
 
 interface Props {
-  users: UserItem[]
-  userId: number | null
-  status: StatusFilter
-  search: string
-  disabled: boolean
-  onUserChange: (userId: number | null) => void
-  onStatusChange: (status: StatusFilter) => void
-  onSearchChange: (search: string) => void
+  users: UserItem[];
+  userId: number | null;
+  status: StatusFilter;
+  search: string;
+  disabled: boolean;
+  onUserChange: (userId: number | null) => void;
+  onStatusChange: (status: StatusFilter) => void;
+  onSearchChange: (search: string) => void;
 }
 
 const TodosFilters = ({
-  users,
+  users = [],
   userId,
   status,
   search,
@@ -35,8 +36,8 @@ const TodosFilters = ({
           className={styles.select}
           value={userId === null ? '' : String(userId)}
           onChange={(e) => {
-            const v = e.target.value
-            onUserChange(v === '' ? null : Number(v))
+            const v = e.target.value;
+            onUserChange(v === '' ? null : Number(v));
           }}
           disabled={disabled}
         >
@@ -44,9 +45,9 @@ const TodosFilters = ({
           {users
             .slice()
             .sort((a, b) => a.name.localeCompare(b.name))
-            .map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name}
+            .map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.name}
               </option>
             ))}
         </select>
@@ -63,9 +64,9 @@ const TodosFilters = ({
           onChange={(e) => onStatusChange(e.target.value as StatusFilter)}
           disabled={disabled}
         >
-          <option value="all">All</option>
-          <option value="pending">Pending</option>
-          <option value="completed">Completed</option>
+          <option value={TODO_STATUS_FILTER.ALL}>All</option>
+          <option value={TODO_STATUS_FILTER.PENDING}>Pending</option>
+          <option value={TODO_STATUS_FILTER.COMPLETED}>Completed</option>
         </select>
       </div>
 
@@ -85,7 +86,7 @@ const TodosFilters = ({
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default TodosFilters
+export default TodosFilters;

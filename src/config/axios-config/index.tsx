@@ -50,7 +50,7 @@ export function extractApiError(error: unknown): ApiError {
 }
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
+  baseURL: import.meta.env.VITE_BASE_URL || 'https://jsonplaceholder.typicode.com',
   timeout: 15_000,
   headers: { 'Content-Type': 'application/json' },
 })
@@ -62,7 +62,7 @@ apiClient.interceptors.request.use(
 
 apiClient.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => Promise.reject(error),
+  (error: AxiosError) => Promise.reject(extractApiError(error)),
 )
 
 export default apiClient

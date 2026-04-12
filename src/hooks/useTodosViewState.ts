@@ -1,64 +1,72 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react';
+import { TODO_STATUS_FILTER } from '@/constant/todo-status';
 
-const STORAGE_KEY = 'todo-dynamic-form:todos-view'
+const STORAGE_KEY = 'todo-dynamic-form:todos-view';
 
-export type StatusFilter = 'all' | 'completed' | 'pending'
+export type StatusFilter =
+  (typeof TODO_STATUS_FILTER)[keyof typeof TODO_STATUS_FILTER];
 
 export interface TodosViewState {
-  userId: number | null
-  status: StatusFilter
-  search: string
-  page: number
+  userId: number | null;
+  status: StatusFilter;
+  search: string;
+  page: number;
 }
 
 const defaultState: TodosViewState = {
   userId: null,
-  status: 'all',
+  status: TODO_STATUS_FILTER.ALL,
   search: '',
   page: 1,
-}
+};
 
 function loadState(): TodosViewState {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return defaultState
-    const parsed = JSON.parse(raw) as Partial<TodosViewState>
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultState;
+    const parsed = JSON.parse(raw) as Partial<TodosViewState>;
+    const isValidStatus = Object.values(TODO_STATUS_FILTER).includes(
+      parsed.status as StatusFilter,
+    );
     return {
       ...defaultState,
       ...parsed,
+      status: isValidStatus
+        ? (parsed.status as StatusFilter)
+        : defaultState.status,
       userId:
         parsed.userId === null || parsed.userId === undefined
           ? null
           : Number(parsed.userId),
       page: Math.max(1, Number(parsed.page) || 1),
-    }
+    };
   } catch {
-    return defaultState
+    return defaultState;
   }
 }
 
 export function useTodosViewState() {
-  const [state, setState] = useState<TodosViewState>(loadState)
+  const [state, setState] = useState<TodosViewState>(loadState);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-  }, [state])
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }, [state]);
 
   const setUserId = useCallback((userId: number | null) => {
-    setState((s) => ({ ...s, userId, page: 1 }))
-  }, [])
+    setState((s) => ({ ...s, userId, page: 1 }));
+  }, []);
 
   const setStatus = useCallback((status: StatusFilter) => {
-    setState((s) => ({ ...s, status, page: 1 }))
-  }, [])
+    setState((s) => ({ ...s, status, page: 1 }));
+  }, []);
 
   const setSearch = useCallback((search: string) => {
-    setState((s) => ({ ...s, search, page: 1 }))
-  }, [])
+    setState((s) => ({ ...s, search, page: 1 }));
+  }, []);
 
   const setPage = useCallback((page: number) => {
-    setState((s) => ({ ...s, page: Math.max(1, page) }))
-  }, [])
+    setState((s) => ({ ...s, page: Math.max(1, page) }));
+  }, []);
 
-  return { state, setUserId, setStatus, setSearch, setPage }
+  return { state, setUserId, setStatus, setSearch, setPage };
 }
