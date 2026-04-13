@@ -1,4 +1,4 @@
-# Todo & dynamic form
+# Todo & Dynamic form
 
 A React + TypeScript app that lists todos from [JSONPlaceholder](https://jsonplaceholder.typicode.com/) with filters, search, and pagination, plus routes for a form builder and preview.
 
