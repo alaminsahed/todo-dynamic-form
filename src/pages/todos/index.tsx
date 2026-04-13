@@ -88,19 +88,21 @@ const Todos = () => {
     <div className={styles.wrap}>
       {isLoading && <Loading />}
 
-      <div className={styles.header}>
-        <h1 className={styles.title}>Todo list</h1>
+      <header className={styles.top}>
+        <div className={styles.titleBlock}>
+          <h1 className={styles.title}>Todos</h1>
+          <p className={styles.subtitle}>
+            Filter by user and status, search titles, paginate results.
+          </p>
+        </div>
         <button
           type="button"
           className={styles.navBtn}
           onClick={() => navigate(PUBLIC.FORM_BUILDER)}
         >
-          Go to Form Builder
+          Form builder
         </button>
-      </div>
-      <p className={styles.subtitle}>
-        Todos with filters, search, and pagination.
-      </p>
+      </header>
 
       <TodosFilters
         users={usersListQuery.data ?? []}

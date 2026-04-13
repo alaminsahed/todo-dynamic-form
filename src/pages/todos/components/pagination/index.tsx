@@ -17,14 +17,16 @@ const TodosPagination = ({ page, totalPages, totalItems, pageSize, onPrev, onNex
 
   return (
     <div className={styles.pagination}>
-      <span>
-        Showing {rangeLabel} of {totalItems} {totalItems === 1 ? 'todo' : 'todos'}
+      <span className={styles.summary}>
+        Showing <strong className={styles.summaryStrong}>{rangeLabel}</strong> of{' '}
+        <strong className={styles.summaryStrong}>{totalItems}</strong>{' '}
+        {totalItems === 1 ? 'todo' : 'todos'}
       </span>
       <div className={styles.actions}>
         <button type="button" className={styles.btn} disabled={page <= 1} onClick={onPrev}>
           Previous
         </button>
-        <span>
+        <span className={styles.pageChip}>
           Page {page} of {totalPages}
         </span>
         <button
