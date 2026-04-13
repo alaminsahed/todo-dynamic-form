@@ -2,11 +2,13 @@
 
 A React + TypeScript app that lists todos from [JSONPlaceholder](https://jsonplaceholder.typicode.com/) with filters, search, and pagination, plus routes for a form builder and preview (assessment scaffold).
 
+**Live:** [todo-dynamic-form.vercel.app](https://todo-dynamic-form.vercel.app/todos)
+
 ## Setup
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (LTS recommended)
+- Node.js (LTS recommended)
 - npm (comes with Node)
 
 ### Install and run
@@ -33,15 +35,6 @@ A React + TypeScript app that lists todos from [JSONPlaceholder](https://jsonpla
 
 5. Open the URL Vite prints in the terminal (usually `http://localhost:5173`). The app redirects to `/todos`.
 
-### Other scripts
-
-| Command           | Purpose                            |
-| ----------------- | ---------------------------------- |
-| `npm run build`   | Typecheck and production build     |
-| `npm run preview` | Serve the production build locally |
-| `npm run lint`    | Run ESLint                         |
-| `npm run format`  | Format with Prettier               |
-
 ### Environment variables
 
 Variables must be prefixed with `VITE_` to be exposed to the client.
@@ -57,34 +50,49 @@ After changing `.env`, restart the dev server.
 
 ### Stack
 
-- **Vite** for bundling and dev server
+- **Vite**
 - **React 19** and **TypeScript**
-- **React Router** with lazy-loaded route chunks and a shared loading fallback
-- **TanStack Query** for server state (caching, loading and error states)
-- **Axios** with a shared client for HTTP requests
+- **React Router**
+- **TanStack Query**
+- **Axios**
 
-### Todos page
+### Todos page (`/todos`)
 
-Todos and users are fetched once each (`/todos` and `/users`). The API does not support server-side filtering for this use case, so **filtering by user, completion status, and title search happens in the client** on the cached list. Results are **paginated in memory** (fixed page size) so the table stays small and responsive.
+| File | Purpose |
+|------|---------|
+| `pages/todos/index.tsx` | Main page — fetches todos and users via TanStack Query, filters/searches/paginates the cached list, renders sub-components. |
+| `pages/todos/components/filters/` | User dropdown, status dropdown, and search input. |
+| `pages/todos/components/table/` | Displays the current page of filtered todos with completion badges. |
+| `pages/todos/components/pagination/` | Previous/Next buttons and page info. |
+| `hooks/useTodosViewState.ts` | Stores filter & pagination UI state (selected user, status, search text, page) in the TanStack Query cache so it persists across route changes. |
+| `services/todo.ts`, `services/user.ts` | Axios calls to `/todos` and `/users`. |
 
-**Filter and pagination UI state** (selected user, status, search text, current page) is stored in the **TanStack Query cache** under a dedicated query key, updated with `setQueryData` and read with a disabled `useQuery`. That keeps state **across navigations** (e.g. leaving for Form Builder and returning) without adding another global store, while still using patterns already in the app for server data.
-
-The page is split into small presentational pieces (filters, table, pagination) with typed props. Loading and error paths are handled explicitly; empty filtered results show an in-table message.
+**Trade-off — why TanStack Query for UI state instead of Redux or Zustand?**
+Redux or Zustand would work fine here. I chose to keep UI state in the Query cache because Query was already in the project for data fetching, so this avoids adding another library. The downside is it's less conventional than a dedicated store, but the hook (`useTodosViewState`) keeps usage clear and isolated.
 
 ### Form builder (`/form-builder`)
 
-The builder lets a user **define an arbitrary set of form fields** before seeing or filling the form. Each field has a label, an input type (text, number, email, textarea, dropdown, checkbox), an optional required flag, and — for dropdowns — a comma-separated list of options.
-
-Fields are kept in local component state while editing. Pressing **Save form** serialises the field array to `localStorage` via a shared `useFormConfig` hook. The hook also exposes `clearFields` and re-reads storage on mount, so definitions survive a page refresh.
-
-Field ordering is managed with simple up/down swap operations on the array. A new field gets a stable UUID (`crypto.randomUUID`) as its key so React never conflates two different rows.
+| File | Purpose |
+|------|---------|
+| `pages/form-builder/index.tsx` | Page — manages the field list in state, handles add/delete/reorder/save/clear. After saving, fields lock; click "Edit" to unlock. |
+| `pages/form-builder/components/FieldRow/` | One editable row per field: label input, type dropdown, required checkbox, options input (for select type), up/down/delete buttons. |
+| `hooks/useFormConfig.ts` | Reads and writes the field array to `localStorage`. Shared between builder and preview. |
+| `types/form.ts` | `FormField` interface and `FIELD_TYPES` constant. |
 
 ### Form preview (`/form-preview`)
 
-The preview page reads the saved field array from `localStorage` via the same `useFormConfig` hook and **renders each field dynamically** through a `DynamicField` component that switches on the field type. Values are tracked in a single `Record<fieldId, string | boolean>` state object, initialised from the field definitions.
+| File | Purpose |
+|------|---------|
+| `pages/form-preview/index.tsx` | Page — reads saved fields from `useFormConfig`, tracks all values in one state object, runs HTML validation on submit, logs `{ label: value }` pairs to the console and shows a success message. Empty state if no form is saved. |
+| `pages/form-preview/components/DynamicField/` | Renders the correct input element (`<input>`, `<textarea>`, `<select>`, checkbox) based on `field.type`. |
 
-On submission the form's native HTML validation runs first (required fields, email format, etc.). If it passes, the handler collects `{ [field.label]: value }` pairs and calls `console.log` with them, then shows a success indicator in the UI. If no form has been saved, the preview page shows an empty state with a link back to the builder.
+### Shared / config
 
-### Developer experience
-
-- **React Query DevTools** are mounted when `VITE_ENVIRONMENT` is `development`, so you can inspect queries and the persisted todos view state during local development.
+| File | Purpose |
+|------|---------|
+| `styles/shared.module.css` | Common CSS Module classes (page layout, nav button, input/select base, card surface, label) composed by page modules to avoid duplication. |
+| `index.css` | CSS variables (`:root`) for colors, radii, shadows — single place to update the palette. |
+| `config/axios-config/` | Axios instance with `VITE_BASE_URL`. A hardcoded fallback URL exists for convenience, but in a real project I would avoid that and require the env variable to be set. |
+| `routes/public.tsx`, `routes/public.lazy.ts` | Route definitions with lazy-loaded page chunks. |
+| `components/loading/` | Full-screen spinner overlay shown during data fetch. |
+| `components/page-metadata/` | Sets the document `<title>` per page. |
