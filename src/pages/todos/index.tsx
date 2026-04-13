@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useNavigate } from 'react-router-dom';
 
+import { LuArrowRight } from 'react-icons/lu';
+
 import { PUBLIC } from '@/constant/app-routes';
 import { fetchTodos } from '@/services/todo';
 import { fetchUsers } from '@/services/user';
@@ -103,6 +105,7 @@ const Todos = () => {
           onClick={() => navigate(PUBLIC.FORM_BUILDER)}
         >
           Form builder
+          <LuArrowRight size={15} />
         </button>
       </header>
 

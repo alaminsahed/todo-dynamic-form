@@ -1,3 +1,65 @@
+:root {
+  /* Text */
+  --text: #0c1222;
+  --text-secondary: #1e293b;
+  --text-body: #334155;
+  --text-muted: #64748b;
+  --text-label: #94a3b8;
+  --text-placeholder: #cbd5e1;
+
+  /* Surfaces */
+  --bg: #f0f1f5;
+  --surface: #ffffff;
+  --surface-hover: #f8fafc;
+  --surface-alt: #fafbfc;
+  --surface-muted: #f1f5f9;
+
+  /* Primary (indigo) */
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-light: #6366f1;
+
+  /* Danger (red) */
+  --danger: #ef4444;
+  --danger-dark: #991b1b;
+  --danger-bg: #fef2f2;
+  --danger-bg-hover: #fee2e2;
+
+  /* Success (green) */
+  --success: #047857;
+  --success-light: #10b981;
+  --success-bg: #ecfdf5;
+
+  /* Warning (amber) */
+  --warning: #b45309;
+  --warning-light: #f59e0b;
+  --warning-bg: #fffbeb;
+
+  /* Borders */
+  --border: rgb(15 23 42 / 0.06);
+  --border-md: rgb(15 23 42 / 0.08);
+  --border-strong: rgb(15 23 42 / 0.1);
+  --border-hover: rgb(15 23 42 / 0.14);
+
+  /* Border radius */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius: 9px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgb(15 23 42 / 0.05);
+  --shadow-sm: 0 1px 3px rgb(15 23 42 / 0.04);
+  --shadow-md: 0 1px 3px rgb(15 23 42 / 0.04), 0 4px 16px rgb(15 23 42 / 0.03);
+  --shadow-lg: 0 1px 3px rgb(15 23 42 / 0.04), 0 8px 24px rgb(15 23 42 / 0.04);
+  --shadow-xl: 0 1px 3px rgb(15 23 42 / 0.04), 0 8px 30px rgb(15 23 42 / 0.06);
+
+  /* Focus ring */
+  --ring: 0 0 0 3px rgb(99 102 241 / 0.1);
+}
+
 *,
 *::before,
 *::after {
@@ -6,15 +68,54 @@
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
 html,
 body,
 #root {
   width: 100%;
   min-height: 100vh;
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  background-color: #f9fafb;
-  color: #111827;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  background: var(--bg);
+  color: var(--text);
+}
+
+::selection {
+  background: rgb(79 70 229 / 0.18);
+  color: #1e1b4b;
+}
+
+:focus-visible {
+  outline: 2px solid rgb(79 70 229 / 0.55);
+  outline-offset: 2px;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
 }

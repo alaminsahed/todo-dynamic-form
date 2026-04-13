@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LuPlus, LuTrash, LuSave, LuPencil, LuArrowRight, LuArrowLeft } from 'react-icons/lu';
+import {
+  LuPlus,
+  LuTrash,
+  LuSave,
+  LuPencil,
+  LuArrowRight,
+  LuArrowLeft,
+} from 'react-icons/lu';
 
 import { PUBLIC } from '@/constant/app-routes';
 import { FIELD_TYPES } from '@/types/form';
@@ -84,8 +91,7 @@ const FormBuilder = () => {
         <div className={styles.titleBlock}>
           <h1 className={styles.title}>Form Builder</h1>
           <p className={styles.subtitle}>
-            Define your form fields. Choose a label and input type for each.
-            Save to preview and submit.
+            Define your form fields. Save to preview and submit.
           </p>
         </div>
         <button
