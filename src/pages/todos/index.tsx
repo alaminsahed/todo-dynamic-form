@@ -10,6 +10,7 @@ import { TODO_STATUS_FILTER } from '@/constant/todo-status';
 import { useTodosViewState } from '@/hooks/useTodosViewState';
 import getErrorMessage from '@/utils/get-error-message';
 import Loading from '@/components/loading';
+import PageMetadata from '@/components/page-metadata';
 import TodosFilters from './components/filters';
 import TodosTable from './components/table';
 import TodosPagination from './components/pagination';
@@ -86,6 +87,7 @@ const Todos = () => {
 
   return (
     <div className={styles.wrap}>
+      <PageMetadata title="Todos" />
       {isLoading && <Loading />}
 
       <header className={styles.top}>
