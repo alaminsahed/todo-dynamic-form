@@ -6,7 +6,6 @@ interface PageMetadataProps {
 
 const PageMetadata = ({ title }: PageMetadataProps) => {
   const fullTitle = title ? `${title} | ${APP_NAME}` : APP_NAME;
-
   return <title>{fullTitle}</title>;
 };
 
