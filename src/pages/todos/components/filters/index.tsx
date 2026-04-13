@@ -36,8 +36,8 @@ const TodosFilters = ({
           className={styles.select}
           value={userId === null ? '' : String(userId)}
           onChange={(e) => {
-            const v = e.target.value;
-            onUserChange(v === '' ? null : Number(v));
+            const value = e.target.value;
+            onUserChange(value === '' ? null : Number(value));
           }}
           disabled={disabled}
         >

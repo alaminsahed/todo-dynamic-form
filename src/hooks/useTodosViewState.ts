@@ -1,72 +1,45 @@
-import { useCallback, useEffect, useState } from 'react';
-import { TODO_STATUS_FILTER } from '@/constant/todo-status';
+import { useQueryClient, useQuery } from '@tanstack/react-query'
+import { TODO_STATUS_FILTER } from '@/constant/todo-status'
 
-const STORAGE_KEY = 'todo-dynamic-form:todos-view';
-
-export type StatusFilter =
-  (typeof TODO_STATUS_FILTER)[keyof typeof TODO_STATUS_FILTER];
+export type StatusFilter = (typeof TODO_STATUS_FILTER)[keyof typeof TODO_STATUS_FILTER]
 
 export interface TodosViewState {
-  userId: number | null;
-  status: StatusFilter;
-  search: string;
-  page: number;
+  userId: number | null
+  status: StatusFilter
+  search: string
+  page: number
 }
 
-const defaultState: TodosViewState = {
+export const FILTER_QUERY_KEY = ['todos-view-state'] as const
+
+export const defaultViewState: TodosViewState = {
   userId: null,
   status: TODO_STATUS_FILTER.ALL,
   search: '',
   page: 1,
-};
-
-function loadState(): TodosViewState {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return defaultState;
-    const parsed = JSON.parse(raw) as Partial<TodosViewState>;
-    const isValidStatus = Object.values(TODO_STATUS_FILTER).includes(
-      parsed.status as StatusFilter,
-    );
-    return {
-      ...defaultState,
-      ...parsed,
-      status: isValidStatus
-        ? (parsed.status as StatusFilter)
-        : defaultState.status,
-      userId:
-        parsed.userId === null || parsed.userId === undefined
-          ? null
-          : Number(parsed.userId),
-      page: Math.max(1, Number(parsed.page) || 1),
-    };
-  } catch {
-    return defaultState;
-  }
 }
 
-export function useTodosViewState() {
-  const [state, setState] = useState<TodosViewState>(loadState);
+export const useTodosViewState = () => {
+  const queryClient = useQueryClient()
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, [state]);
+  const { data: state = defaultViewState } = useQuery<TodosViewState>({
+    queryKey: FILTER_QUERY_KEY,
+    queryFn: () => defaultViewState,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    enabled: false,
+  })
 
-  const setUserId = useCallback((userId: number | null) => {
-    setState((s) => ({ ...s, userId, page: 1 }));
-  }, []);
+  const update = (patch: Partial<TodosViewState>) =>
+    queryClient.setQueryData<TodosViewState>(FILTER_QUERY_KEY, (prev) => ({
+      ...(prev ?? defaultViewState),
+      ...patch,
+    }))
 
-  const setStatus = useCallback((status: StatusFilter) => {
-    setState((s) => ({ ...s, status, page: 1 }));
-  }, []);
+  const setUserId = (userId: number | null) => update({ userId, page: 1 })
+  const setStatus = (status: StatusFilter) => update({ status, page: 1 })
+  const setSearch = (search: string) => update({ search, page: 1 })
+  const setPage = (page: number) => update({ page: Math.max(1, page) })
 
-  const setSearch = useCallback((search: string) => {
-    setState((s) => ({ ...s, search, page: 1 }));
-  }, []);
-
-  const setPage = useCallback((page: number) => {
-    setState((s) => ({ ...s, page: Math.max(1, page) }));
-  }, []);
-
-  return { state, setUserId, setStatus, setSearch, setPage };
+  return { state, setUserId, setStatus, setSearch, setPage }
 }
