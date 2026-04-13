@@ -71,9 +71,19 @@ Todos and users are fetched once each (`/todos` and `/users`). The API does not 
 
 The page is split into small presentational pieces (filters, table, pagination) with typed props. Loading and error paths are handled explicitly; empty filtered results show an in-table message.
 
-### Form builder & preview
+### Form builder (`/form-builder`)
 
-Dedicated routes exist (`/form-builder`, `/form-preview`) so the assessment can grow into a dynamic form definition and preview flow alongside the todos feature.
+The builder lets a user **define an arbitrary set of form fields** before seeing or filling the form. Each field has a label, an input type (text, number, email, textarea, dropdown, checkbox), an optional required flag, and — for dropdowns — a comma-separated list of options.
+
+Fields are kept in local component state while editing. Pressing **Save form** serialises the field array to `localStorage` via a shared `useFormConfig` hook. The hook also exposes `clearFields` and re-reads storage on mount, so definitions survive a page refresh.
+
+Field ordering is managed with simple up/down swap operations on the array. A new field gets a stable UUID (`crypto.randomUUID`) as its key so React never conflates two different rows.
+
+### Form preview (`/form-preview`)
+
+The preview page reads the saved field array from `localStorage` via the same `useFormConfig` hook and **renders each field dynamically** through a `DynamicField` component that switches on the field type. Values are tracked in a single `Record<fieldId, string | boolean>` state object, initialised from the field definitions.
+
+On submission the form's native HTML validation runs first (required fields, email format, etc.). If it passes, the handler collects `{ [field.label]: value }` pairs and calls `console.log` with them, then shows a success indicator in the UI. If no form has been saved, the preview page shows an empty state with a link back to the builder.
 
 ### Developer experience
 
